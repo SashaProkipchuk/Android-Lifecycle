@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment
 import com.raywenderlich.android.puppycounter.R
 import com.raywenderlich.android.puppycounter.model.DogCount
 import timber.log.Timber
+import androidx.fragment.app.viewModels
+import com.raywenderlich.android.puppycounter.fragments.viewmodels.MainViewModel
+
 
 /*
  * Copyright (c) 2021 Razeware LLC
@@ -62,6 +65,8 @@ class MainFragment : Fragment() {
 
   private var dogCount: DogCount = DogCount()
 
+  private val viewModel: MainViewModel by viewModels()
+
   private lateinit var smallDogCountLabel: TextView
   private lateinit var middleDogCountLabel: TextView
   private lateinit var bigDogCountLabel: TextView
@@ -89,6 +94,7 @@ class MainFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     Timber.i("PuppyCounter - MainFragment - onViewCreated()")
     super.onViewCreated(view, savedInstanceState)
+    subscribeToViewModel()
     findViews(view)
     setupSmallDogViewsClickListeners(view)
     setupMiddleDogViewsClickListeners(view)
@@ -136,6 +142,13 @@ class MainFragment : Fragment() {
 
     // Always call the superclass so it can save the view hierarchy state
     super.onSaveInstanceState(outState)
+  }
+
+  private fun subscribeToViewModel() {
+    viewModel.dogCount.observe(viewLifecycleOwner, { value ->
+      dogCount = value
+      renderDogCount(dogCount)
+    })
   }
 
   private fun findViews(view: View) {
